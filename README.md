@@ -2,6 +2,9 @@
 Jogo da cobrinha que o Angelis pediu pra entregar.
 Na sessão de Issues do github estão as tarefas que ainda precisam ser feitas
 
+![img1](https://user-images.githubusercontent.com/17063193/65259973-fbe08880-dadb-11e9-816f-086710e4fb05.png)
+
+
 
 Projeto I: Jogo da Cobra
 
