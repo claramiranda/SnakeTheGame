@@ -3,11 +3,14 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import javazoom.jl.player.Player;
 
 public class Gamepanel extends JPanel implements Runnable, KeyListener {
 
@@ -30,7 +33,11 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 	// Placar do jogo
 	private int score;
 
+	//variavel auxiliar para gerar numeros aleatórios
 	private Random randomNumber;
+	
+	//objeto para manipular os efeitos sonoros
+	private SoundEffects sons = new SoundEffects();
 
 	// Coordenadas iniciais e tamanho do corpo da cobrinha
 	private int xCoor = 10, yCoor = 10, bodySize = 3;
@@ -81,6 +88,9 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		addKeyListener(this);
 		
 		new Thread(this).start();
+		//newGameSound();
+		sons.newGameSound();
+		
 	}
 
 	public boolean Tick() {
@@ -116,25 +126,43 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 				updateScreenInterval -= 2;
 
 			apple = new Food(randomNumber.nextInt(49), randomNumber.nextInt(49), 10);
+			sons.eatSound();
 		}
 
 		// colisao com o corpo da cobra
 		for (int i = 0; i < snake.size(); i++) {
-			if (xCoor == snake.get(i).getxCoor() && yCoor == snake.get(i).getyCoor()) {
+			if (xCoor == snake.get(i).getxCoor() && yCoor == snake.get(i).getyCoor()) {	
 				if (i != snake.size() - 1) {
-					JOptionPane.showMessageDialog(null,
-							"Neste jogo não é permitido canibalismo. Infelizmente você comeu " + score
-									+ " frutinhas e perdeu.");
-					retorno = false;
-				}
+					sons.gameOverSound();
+					int j = JOptionPane.showConfirmDialog(null,"Neste jogo não é permitido canibalismo. Infelizmente você comeu "
+							+ score	+ " frutinhas e perdeu. Deseja jogar de novo?","TextEditor", 0); 
+					if(j == 0){ 
+						System.out.println("[LOG] Nova partida");
+						retorno = false;
+					}
+					else if (j == 1){ 
+						System.out.println("[LOG] Sair do jogo"); 
+						System.exit(0);
+					}
+				}				
 			}
 		}
 
 		// colisao da cobra com as paredes
 		if (xCoor < 0 || xCoor > 50 || yCoor < 0 || yCoor > 50) {
-			JOptionPane.showMessageDialog(null, "Nossa cobrinha ainda não atravessa paredes e infelizmente você comeu "
-					+ score + " frutinhas e perdeu.");
-			retorno = false;
+			sons.gameOverSound();
+			int i = JOptionPane.showConfirmDialog(null, "\"Nossa cobrinha ainda não atravessa paredes. "
+					+ "Infelizmente você comeu apenas " +  score + " frutinhas e perdeu. Deseja jogar de novo?","TextEditor", 0); 
+			if(i == 0){ 
+				System.out.println("[LOG] Nova partida");
+				retorno = false;
+			}
+			else if (i == 1){ 
+				System.out.println("[LOG] Sair do jogo"); 
+				System.exit(0);
+			}
+			
+			
 		}
 
 		try {
@@ -217,5 +245,5 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		// TODO Auto-generated method stub
 
 	}
-
+	
 }
