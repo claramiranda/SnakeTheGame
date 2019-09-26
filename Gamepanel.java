@@ -6,197 +6,216 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class Gamepanel extends JPanel implements Runnable, KeyListener {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	public static final int WIDTH = 800, HEIGHT = 800; //Dimensoes do jogo
-	
-	private Thread thread;
-	
-	private boolean running;
-	private boolean right = true, left = false, up = false, down = false;
-	
-	private BodyPart b;
-	private ArrayList<BodyPart> snake;
-	
-	private Food apple;
-	private ArrayList<Food> apples;
-	private int placar;
-	
-	private Random r;
-	
-	private int xCoor = 10, yCoor = 10, size = 3;
-	private int ticks = 0;
-	
-	
 
-	//construtor do panel
-	// monta tabuleiro, add listener, cria a cobra e começa a rodar
+	// Dimensões da tela do jogo
+	public static final int WIDTH = 500, HEIGHT = 500;
+
+	// Variavel que guarda o tempo de atualização da tela, ou seja, a velocidade da
+	// cobrinha. Valores em milisegundos
+	private int updateScreenInterval = 100;
+
+	// Direções de movimentação da cobrinha
+	private boolean right = true, left = false, up = false, down = false;
+
+	// Corpo da cobrinha. Composto por uma lista de 'Bodypart'
+	private ArrayList<BodyPart> snake;
+
+	// Comida disponível na tela
+	private Food apple;
+
+	// Placar do jogo
+	private int score;
+
+	private Random randomNumber;
+
+	// Coordenadas iniciais e tamanho do corpo da cobrinha
+	private int xCoor = 10, yCoor = 10, bodySize = 3;
+
+	/**
+	 * Construtor do Panel
+	 */
 	public Gamepanel() {
+		StartGame();
+	}
+
+	/**
+	 * Função responsável por inicializar os parâmetros do jogo
+	 */
+	private void StartGame() {
+		// Define as coordenadas iniciais da cobrinha
+		xCoor = 10;
+		yCoor = 10;
+
+		// Define o sentido inicial (direita)
+		right = true;
+		left = false;
+		up = false;
+		down = false;
+
+		// Define o tamanho do corpo inicial da cobrinha (3 quadrados)
+		bodySize = 3;
+
+		// Define a velocidade inicial da cobrinha
+		updateScreenInterval = 100;
+
+		// Define o corpo da cobrinha como uma lista vazia
+		snake = new ArrayList<BodyPart>();
+
+		// Define o placar iniciando em 0
+		score = 0;
+
+		// Variável para números aleatórios
+		randomNumber = new Random();
+
+		// Posiciona a primeira comida na tela
+		apple = new Food(randomNumber.nextInt(49), randomNumber.nextInt(49), 10);
+
 		setFocusable(true);
+
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		
-		setPreferredSize(new Dimension(WIDTH,HEIGHT));
 		addKeyListener(this);
 		
-		snake = new ArrayList<BodyPart>();
-		apples = new ArrayList<Food>();
-		placar = 0;
-		r = new Random();
-		//System.out.println("Construtor Jpanel");
-		start();
+		new Thread(this).start();
 	}
-	
-	public void start() {
-		running = true;
-		thread = new Thread(this);
-		thread.start();
 
-	}
-	
-	public void stop() {
-		//metodo pra fechar a thread do jogo
-		running = false;
-		
-		//opçoes de replay devem ser inseridas abaixo
-		System.out.println("Comeu "+ placar +" frutinhas!");
-			
-	}
-	
-	public void tick() { //metodo de momentos
-		if(snake.size() == 0) {
-			b = new BodyPart(xCoor, yCoor, 10);
-			snake.add(b);
+	public boolean Tick() {
+
+		boolean retorno = true;
+
+		// Caso a lista de corpo da cobra esteja vazia, então adiciona um elemento
+		if (snake.size() == 0)
+			snake.add(new BodyPart(xCoor, yCoor, 10));
+
+		if (right)
+			xCoor++;
+		if (left)
+			xCoor--;
+		if (up)
+			yCoor--;
+		if (down)
+			yCoor++;
+
+		snake.add(new BodyPart(xCoor, yCoor, 10));
+
+		if (snake.size() > bodySize) {
+			snake.remove(0);
 		}
-		
-		ticks++;
-		
-		if(ticks > 250000) {  //Aqui é onde a magia do movimento acontece, não mexe nesse valor pq ele controla a velocidade da cobra 
-			if(right) xCoor++;
-			if(left) xCoor--;
-			if(up) yCoor--;
-			if(down) yCoor++;
-			
-			ticks = 0;
-			b = new BodyPart(xCoor, yCoor, 10);
-			snake.add(b);
-			if (snake.size() > size) {
-				snake.remove(0);
-			}
+
+		// Colisão da cobra com a comida. Aumenta um elemento no corpo da cobra, um
+		// ponto e diminui o tempo
+		if (xCoor == apple.getxCoor() && yCoor == apple.getyCoor()) {
+			bodySize++;
+			score++;
+
+			if (updateScreenInterval > 10)
+				updateScreenInterval -= 2;
+
+			apple = new Food(randomNumber.nextInt(49), randomNumber.nextInt(49), 10);
 		}
-		
-		
-		//posiciona as comidinhas
-		if(apples.size() == 0) {
-			int x = r.nextInt(79);  //NAO MUDAR ESSES VALORES SENAO A COMIDA VAI APARECER FORA DO TABULEIRO
-			int y = r.nextInt(79);
-			
-			apple = new Food(x, y, 10);
-			apples.add(apple);
-		}
-		
-		
-		//colisao com as comidinhas
-		for(int i = 0 ; i < apples.size() ; i++) {
-			if(xCoor == apples.get(i).getxCoor() && yCoor == apples.get(i).getyCoor()) {
-				size++;
-				placar++;
-				apples.remove(i);
-				i++;
-			}
-		}
-		
-		//colisao com o corpo da cobra
-		for(int i = 0 ; i < snake.size(); i++) {
-			if(xCoor == snake.get(i).getxCoor() && yCoor == snake.get(i).getyCoor()) {
-				if(i != snake.size()-1) {
-					System.out.println();
-					stop();
+
+		// colisao com o corpo da cobra
+		for (int i = 0; i < snake.size(); i++) {
+			if (xCoor == snake.get(i).getxCoor() && yCoor == snake.get(i).getyCoor()) {
+				if (i != snake.size() - 1) {
+					JOptionPane.showMessageDialog(null,
+							"Neste jogo não é permitido canibalismo. Infelizmente você comeu " + score
+									+ " frutinhas e perdeu.");
+					retorno = false;
 				}
 			}
 		}
-		
-		//colisao da cobra com as paredes
-		if(xCoor < 0 || xCoor > 80 || yCoor < 0 || yCoor > 80) {
-			System.out.println("Game Over");
-			stop();
+
+		// colisao da cobra com as paredes
+		if (xCoor < 0 || xCoor > 50 || yCoor < 0 || yCoor > 50) {
+			JOptionPane.showMessageDialog(null, "Nossa cobrinha ainda não atravessa paredes e infelizmente você comeu "
+					+ score + " frutinhas e perdeu.");
+			retorno = false;
 		}
-		
-		
+
+		try {
+			// Aqui é o controle de atualização tempo de tela, logo é o controle da velocidade da cobrinha
+			Thread.sleep(updateScreenInterval);
+		} catch (InterruptedException e) {
+
+		}
+
+		repaint();
+
+		return retorno;
 	}
-	
-	public void paint(Graphics g) { //metodo onde ocorre todo o trabalho gráfico (vou mexer ainda)
+
+	public void paint(Graphics g) { // metodo onde ocorre todo o trabalho gráfico (vou mexer ainda)
 		g.clearRect(0, 0, WIDTH, HEIGHT);
 		g.setColor(Color.GRAY);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
-		
-		for(int i = 0; i < WIDTH / 10; i++ ) {
-			g.drawLine(i * 10, 0, i*10, HEIGHT);
+
+		for (int i = 0; i < WIDTH / 10; i++) {
+			g.drawLine(i * 10, 0, i * 10, HEIGHT);
 		}
-		
-		for(int i = 0; i < HEIGHT; i++ ) {
+
+		for (int i = 0; i < HEIGHT; i++) {
 			g.drawLine(0, i * 10, HEIGHT, i * 10);
 		}
 		for (int i = 0; i < snake.size(); i++) {
 			snake.get(i).draw(g);
 		}
-		for(int i = 0 ; i < apples.size(); i++) {
-			apples.get(i).draw(g);
-		}
+		
+		//Desenha a comida na tela
+		apple.draw(g);
+		
 	}
 
 	@Override
 	public void run() {
-		while(running) {
-			tick();
-			repaint();
+		while (Tick()) {
 		}
+
+		StartGame();
 	}
 
-	@Override //metodos que setam o listener
+	@Override // metodos que setam o listener
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		if(key == KeyEvent.VK_RIGHT && !left) {
+		if (key == KeyEvent.VK_RIGHT && !left) {
 			right = true;
 			up = false;
 			down = false;
 		}
-		
-		if(key == KeyEvent.VK_LEFT && !right) {
+
+		if (key == KeyEvent.VK_LEFT && !right) {
 			left = true;
 			up = false;
 			down = false;
 		}
-		if(key == KeyEvent.VK_UP && !down) {
+		if (key == KeyEvent.VK_UP && !down) {
 			up = true;
 			left = false;
 			right = false;
 		}
-		
-		if(key == KeyEvent.VK_DOWN && !up) {
+
+		if (key == KeyEvent.VK_DOWN && !up) {
 			down = true;
 			left = false;
 			right = false;
 		}
-		
-		
+
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
