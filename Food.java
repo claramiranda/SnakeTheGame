@@ -1,15 +1,23 @@
 import java.awt.Color;
 import java.awt.Graphics;
-import java.io.FileInputStream;
 import java.util.Random;
 
-import javazoom.jl.player.Player;
+/**
+ *  Classe Food, responsável por criar os objetos de comidinha 
+ * @author Clara Anna
+ *
+ */
 
 public class Food {
 
 	 private int xCoor, yCoor, width, height;
 	 		 Color color;
-	 
+	 /**
+	  * 
+	  * @param xCoor - valor da posição X
+	  * @param yCoor - valor da posição Y
+	  * @param tileSize - tamanho do bloco
+	  */
 	 public Food(int xCoor, int yCoor, int tileSize) {
 		 this.xCoor = xCoor;
 		 this.yCoor = yCoor;
@@ -27,16 +35,16 @@ public class Food {
 		 System.out.println("[LOG] Posicionando comidinha. X: "+this.xCoor+", Y: "+this.yCoor);
 	 }
 	 
-	 public void tick() {
-	  
-	 }
-	
-	 
+	/**
+	 *  Método que desenha a comidinha
+	 * @param g
+	 */
 	 public void draw(Graphics g) {
 		 g.setColor(this.color); 
 		 g.fillRect(xCoor * width, yCoor * height, width, height);
 	 }
 
+	 //Getters e Setters
 	public int getxCoor() {
 		return xCoor;
 	}

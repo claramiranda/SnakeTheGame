@@ -3,18 +3,25 @@ import java.io.File;
 import java.io.FileInputStream;
 import javazoom.jl.player.Player;
 
+/**
+ * Classe para manipulação de audio e efeitos sonoros
+ * 
+ * @author Clara Anna
+ *
+ */
 public class SoundEffects {
 
-	public static void newGameSound() {
+	/**
+	 * Executa áudio ao iniciar uma partida.
+	 */
+	public void newGameSound() {
 
 		// STRING COM O CAMINHO DO ARQUIVO MP3 A SER TOCADO
 		String path = "sound/new_game.mp3";
-
-		// INSTANCIAÇÃO DO OBJETO FILE COM O ARQUIVO MP3
 		File mp3File = new File(path);
 
 		// INSTANCIAÇÃO DO OBJETO MP3MUSICA DA CLASS INTERNA
-		MP3Musica musica = new MP3Musica();
+		MP3audio musica = new MP3audio();
 		musica.tocar(mp3File);
 
 		// CHAMA O METODO QUE TOCA A MUSICA
@@ -22,82 +29,68 @@ public class SoundEffects {
 		System.out.println("[LOG] Tocando som " + path);
 	}
 	
-	public static void gameOverSound() {
+	/**
+	 * Executa áudio ao finalizar uma partida.
+	 */
+	public void gameOverSound() {
 
-		// STRING COM O CAMINHO DO ARQUIVO MP3 A SER TOCADO
 		String path = "sound/ouch.mp3";
 
-		// INSTANCIAÇÃO DO OBJETO FILE COM O ARQUIVO MP3
 		File mp3File = new File(path);
 
-		// INSTANCIAÇÃO DO OBJETO MP3MUSICA DA CLASS INTERNA
-		MP3Musica musica = new MP3Musica();
+		MP3audio musica = new MP3audio();
 		musica.tocar(mp3File);
 
-		// CHAMA O METODO QUE TOCA A MUSICA
 		musica.start();
 		System.out.println("[LOG] Tocando som " + path);
 	}
 	
-	public static void eatSound() {
-
-		// STRING COM O CAMINHO DO ARQUIVO MP3 A SER TOCADO
+	/**
+	 * Executa áudio ao comer uma frutinha
+	 */
+	public void eatSound() {
 		String path = "sound/eat.mp3";
-
-		// INSTANCIAÇÃO DO OBJETO FILE COM O ARQUIVO MP3
+		
 		File mp3File = new File(path);
-
-		// INSTANCIAÇÃO DO OBJETO MP3MUSICA DA CLASS INTERNA
-		MP3Musica musica = new MP3Musica();
+		
+		MP3audio musica = new MP3audio();
+		
 		musica.tocar(mp3File);
-
-		// CHAMA O METODO QUE TOCA A MUSICA
 		musica.start();
+		
 		System.out.println("[LOG] Tocando som " + path);
 	}
 
 	/**
 	 * ====================================================================
-	 * CLASS INTERNA MP3 MUSICA QUE EXTENDE DE THREAD PARA TRABALHAR
-	 * PERFEITAMENTE NA APLICAÇÂO SEM TRAVAMENTO NA EXECUÇÃO
+	 * Classe interna que extende Thead para conseguir executar os sons
+	 * sem travar o jogo
 	 * ====================================================================
 	 */
-	public static class MP3Musica extends Thread {
+	public static class MP3audio extends Thread {
 
-		// OBJETO PARA O ARQUIVO MP3 A SER TOCADO
+		// Objeto pra tocar o mp3
 		private File mp3;
 
-		// OBJETO PLAYER DA BIBLIOTECA JLAYER QUE TOCA O ARQUIVO MP3
+		// Objeto Player importado da biblioteca JPlayer
 		private Player player;
-
-		/**
-		 * CONSTRUTOR RECEBE O OBJETO FILE REFERECIANDO O ARQUIVO MP3 A SER
-		 * TOCADO E ATRIBUI AO ATRIBUTO DA CLASS
-		 *
-		 * @param mp3
-		 */
 		public void tocar(File mp3) {
 			this.mp3 = mp3;
 		}
 
 		/**
-		 * ===============================================================
-		 * ======================================METODO RUN QUE TOCA O MP3
-		 * ===============================================================
+		 * Método responsável pela execução do .mp3
+		 * @throws MP3 Exceptions
 		 */
 		public void run() {
 			try {
 				FileInputStream fis = new FileInputStream(mp3);
 				BufferedInputStream bis = new BufferedInputStream(fis);
-
 				this.player = new Player(bis);
-				//System.out.println("[LOG] Tocando som " + this.path);
-
 				this.player.play();
-				//System.out.println("Terminado Musica!");
 
 			} catch (Exception e) {
-				System.out.println("Problema ao tocar Musica" + mp3);
+				System.out.println("[LOG] Problema ao tocar Musica" + mp3);
 				e.printStackTrace();
 			}
 		}

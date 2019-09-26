@@ -3,22 +3,29 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import javazoom.jl.player.Player;
+
+/**
+ * 
+ * @author Clara Anna, Osvaldo Neto
+ * 
+ */
 
 public class Gamepanel extends JPanel implements Runnable, KeyListener {
+
+	//Variável obrigatória
+	private static final long serialVersionUID = 1L;
 
 	// Dimensões da tela do jogo
 	public static final int WIDTH = 500, HEIGHT = 500;
 
-	// Variavel que guarda o tempo de atualização da tela, ou seja, a velocidade da
-	// cobrinha. Valores em milisegundos
+	//Variavel que guarda o tempo de atualização da tela, ou seja, a velocidade da
+	//cobrinha. Valores em milisegundos
 	private int updateScreenInterval = 100;
 
 	// Direções de movimentação da cobrinha
@@ -44,6 +51,7 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 
 	/**
 	 * Construtor do Panel
+	 * cria o jpannel e inicia o jogo
 	 */
 	public Gamepanel() {
 		StartGame();
@@ -81,20 +89,25 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		// Posiciona a primeira comida na tela
 		apple = new Food(randomNumber.nextInt(49), randomNumber.nextInt(49), 10);
 
+		//Métodos de manipulação do pannel
 		setFocusable(true);
-
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-		
+	
+		//inclui o listener do teclado
 		addKeyListener(this);
 		
+		//Inicia a thread do jogo
 		new Thread(this).start();
-		//newGameSound();
-		sons.newGameSound();
 		
+		//executa som de ínicio da partida
+		sons.newGameSound();
 	}
 
+	/**
+	 * Método de manipulação de momento do jogo
+	 * @return false quando a partida termina
+	 */
 	public boolean Tick() {
-
 		boolean retorno = true;
 
 		// Caso a lista de corpo da cobra esteja vazia, então adiciona um elemento
@@ -161,8 +174,6 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 				System.out.println("[LOG] Sair do jogo"); 
 				System.exit(0);
 			}
-			
-			
 		}
 
 		try {
@@ -177,9 +188,17 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		return retorno;
 	}
 
-	public void paint(Graphics g) { // metodo onde ocorre todo o trabalho gráfico (vou mexer ainda)
+	
+	/**
+	 * Método de manipulação dos gráficos
+	 */
+	public void paint(Graphics g) { 
+		
+		//Cor do tabuleiro
+		g.setColor(Color.GRAY); 
+		
+		//inicialização do tabuleiro
 		g.clearRect(0, 0, WIDTH, HEIGHT);
-		g.setColor(Color.GRAY);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 
 		for (int i = 0; i < WIDTH / 10; i++) {
@@ -189,6 +208,8 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		for (int i = 0; i < HEIGHT; i++) {
 			g.drawLine(0, i * 10, HEIGHT, i * 10);
 		}
+		
+		//desenha a cobrinha
 		for (int i = 0; i < snake.size(); i++) {
 			snake.get(i).draw(g);
 		}
@@ -202,11 +223,13 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 	public void run() {
 		while (Tick()) {
 		}
-
 		StartGame();
 	}
 
-	@Override // metodos que setam o listener
+	/**
+	 * Métodos que configuram as ações dos botões
+	 */
+	@Override 
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		if (key == KeyEvent.VK_RIGHT && !left) {
