@@ -1,5 +1,5 @@
 # SnakeTheGame
-Implementação do clássico Jogo da Cobrinha feita por mim usando Java.
+Implementação do clássico Jogo da Cobrinha feita usando Java.
 Foi um dos trabalhos propostos em sala pelo prof° Angelis durante o curso de Programação Orientada a Objetos II, na faculdade.
 
 
