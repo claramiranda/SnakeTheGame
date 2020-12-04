@@ -12,9 +12,9 @@ import javax.swing.JPanel;
 
 /**
  * Classe responsavel pela manipulaçao do jpannel
- * 
+ *
  * @author Clara Anna, Osvaldo Neto
- * 
+ *
  */
 
 public class Gamepanel extends JPanel implements Runnable, KeyListener {
@@ -43,7 +43,7 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 
 	//variavel auxiliar para gerar numeros aleatórios
 	private Random randomNumber;
-	
+
 	//objeto para manipular os efeitos sonoros
 	private SoundEffects sons = new SoundEffects();
 
@@ -93,13 +93,13 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		//Métodos de manipulação do pannel
 		setFocusable(true);
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
-	
+
 		//inclui o listener do teclado
 		addKeyListener(this);
-		
+
 		//Inicia a thread do jogo
 		new Thread(this).start();
-		
+
 		//executa som de ínicio da partida
 		sons.newGameSound();
 	}
@@ -145,20 +145,20 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 
 		// colisao com o corpo da cobra
 		for (int i = 0; i < snake.size(); i++) {
-			if (xCoor == snake.get(i).getxCoor() && yCoor == snake.get(i).getyCoor()) {	
+			if (xCoor == snake.get(i).getxCoor() && yCoor == snake.get(i).getyCoor()) {
 				if (i != snake.size() - 1) {
 					sons.gameOverSound();
 					int j = JOptionPane.showConfirmDialog(null,"Neste jogo não é permitido canibalismo. Infelizmente você comeu "
-							+ score	+ " frutinhas e perdeu. Deseja jogar de novo?","TextEditor", 0); 
-					if(j == 0){ 
+							+ score	+ " frutinhas e perdeu. Deseja jogar de novo?","TextEditor", 0);
+					if(j == 0){
 						System.out.println("[LOG] Nova partida");
 						retorno = false;
 					}
-					else if (j == 1){ 
-						System.out.println("[LOG] Sair do jogo"); 
+					else if (j == 1){
+						System.out.println("[LOG] Sair do jogo");
 						System.exit(0);
 					}
-				}				
+				}
 			}
 		}
 
@@ -166,13 +166,13 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		if (xCoor < 0 || xCoor > 50 || yCoor < 0 || yCoor > 50) {
 			sons.gameOverSound();
 			int i = JOptionPane.showConfirmDialog(null, "\"Nossa cobrinha ainda não atravessa paredes. "
-					+ "Infelizmente você comeu apenas " +  score + " frutinhas e perdeu. Deseja jogar de novo?","TextEditor", 0); 
-			if(i == 0){ 
+					+ "Infelizmente você comeu apenas " +  score + " frutinhas e perdeu. Deseja jogar de novo?","TextEditor", 0);
+			if(i == 0){
 				System.out.println("[LOG] Nova partida");
 				retorno = false;
 			}
-			else if (i == 1){ 
-				System.out.println("[LOG] Sair do jogo"); 
+			else if (i == 1){
+				System.out.println("[LOG] Sair do jogo");
 				System.exit(0);
 			}
 		}
@@ -189,18 +189,26 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		return retorno;
 	}
 
-	
+
 	/**
 	 * Método de manipulação dos gráficos
 	 */
-	public void paint(Graphics g) { 
-		
+	public void paint(Graphics g) {
+
 		//Cor do tabuleiro
-		g.setColor(Color.GRAY); 
-		
+		g.setColor(Color.GRAY);
+
 		//inicialização do tabuleiro
 		g.clearRect(0, 0, WIDTH, HEIGHT);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
+
+    //Placar
+    g.setFont(new Font("Dialog"), Font.PLAIN, 16);
+    g.setColor(Color.WHITE);
+    g.drawString("Score: " + score, 15, 25);
+
+		//Cor do tabuleiro
+		g.setColor(Color.GRAY);
 
 		for (int i = 0; i < WIDTH / 10; i++) {
 			g.drawLine(i * 10, 0, i * 10, HEIGHT);
@@ -209,15 +217,15 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		for (int i = 0; i < HEIGHT; i++) {
 			g.drawLine(0, i * 10, HEIGHT, i * 10);
 		}
-		
+
 		//desenha a cobrinha
 		for (int i = 0; i < snake.size(); i++) {
 			snake.get(i).draw(g);
 		}
-		
+
 		//Desenha a comida na tela
 		apple.draw(g);
-		
+
 	}
 
 	@Override
@@ -230,7 +238,7 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 	/**
 	 * Métodos que configuram as ações dos botões
 	 */
-	@Override 
+	@Override
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
 		if (key == KeyEvent.VK_RIGHT && !left) {
@@ -269,5 +277,5 @@ public class Gamepanel extends JPanel implements Runnable, KeyListener {
 		// TODO Auto-generated method stub
 
 	}
-	
+
 }
